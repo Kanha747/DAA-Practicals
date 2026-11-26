@@ -3,31 +3,22 @@
 #include <climits>
 using namespace std;
 int main() {
- vector<vector<int>> cost = {
- {0,10,15,20},
- {10,0,35,25},
- {15,35,0,30},
- {20,25,30,0}
+ const int INF = 1000000;
+ vector<vector<int>> d = {
+ {0,5,INF,10},
+ {INF,0,3,INF},
+ {INF,INF,0,1},
+ {INF,INF,INF,0}
  };
- int n = cost.size();
- int N = 1 << n;
- const int INF = 1000000000;
- vector<vector<int>> dp(N, vector<int>(n, INF));
- dp[1][0] = 0;
- for (int mask = 1; mask < N; mask++) {
- for (int u = 0; u < n; u++) {
- if (!(mask & (1 << u)) || dp[mask][u] == INF) continue;
- for (int v = 0; v < n; v++) {
- if (mask & (1 << v)) continue;
- int nextMask = mask | (1 << v);
- dp[nextMask][v] =
- min(dp[nextMask][v], dp[mask][u] + cost[u][v]);
+ int V = d.size();
+ for (int k = 0; k < V; k++)
+ for (int i = 0; i < V; i++)
+ for (int j = 0; j < V; j++)
+ if (d[i][k] < INF && d[k][j] < INF)
+ d[i][j] = min(d[i][j], d[i][k] + d[k][j]);
+ for (auto &row : d) {
+ for (int x : row)
+ cout << (x >= INF ? -1 : x) << "\t";
+ cout << endl;
  }
- }
- }
- int ans = INF;
- int full = N - 1;
- for (int u = 1; u < n; u++)
- ans = min(ans, dp[full][u] + cost[u][0]);
- cout << "Minimum tour cost = " << ans;
 }
